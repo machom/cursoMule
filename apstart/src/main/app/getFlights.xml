@@ -15,6 +15,11 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
 http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
+    <flow name="getFlightsFromForm">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/flights2" allowedMethods="POST" doc:name="HTTP"/>
+        <json:json-to-object-transformer returnClass="com.mulesoft.training.FlightRequest" doc:name="JSON to Object"/>
+        <flow-ref name="getFlightsFlow" doc:name="getFlightsFlow"/>
+    </flow>
     
    
      <flow name="getFlightFormFlow">
@@ -110,5 +115,5 @@ WHERE toAirport = #[flowVars.destination]]]></db:parameterized-query>
         <set-payload value="#[payload.flights]" doc:name="Collection of Flights"/>
         <logger message="#[payload]" level="INFO" doc:name="Logger"/>
     </flow>
-    
+  
 </mule>

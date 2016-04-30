@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+<mule xmlns:context="http://www.springframework.org/schema/context" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
@@ -8,16 +8,17 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd">
-    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8085" doc:name="HTTP Listener Configuration"/>
-    <http:request-config name="United_REST_Request_Configuration" host="mu.mulesoft-training.com" port="80" basePath="/essentials/united/flights" doc:name="HTTP Request Configuration"/>
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="${http.port}" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="United_REST_Request_Configuration" host="${http.host}" port="${http.portNum}" basePath="${http.pathUnited}" doc:name="HTTP Request Configuration"/>
     <http:request-config name="Bank_REST_Request_Configuration" host="mu.mulesoft-training.com" port="80" basePath="/build/banking/rest" doc:name="HTTP Request Configuration">
         <http:raml-api-configuration location="https://anypoint.mulesoft.com/apiplatform/repository/v2/organizations/fd604b43-365c-42e8-810f-733a2b7f411f/public/apis/9565/versions/26302/files/root"/>
     </http:request-config>
     <ws:consumer-config name="Delta_Web_Service_Consumer" wsdlLocation="http://mu.mulesoft-training.com/essentials/delta?wsdl" service="TicketServiceService" port="TicketServicePort" serviceAddress="http://training-u.cloudhub.io/essentials/delta" doc:name="Web Service Consumer"/>
-    <db:mysql-config name="Training_MySQL_Configuration" host="mudb.mulesoft-training.com" port="3306" user="mule" password="mule" database="training" doc:name="MySQL Configuration"/>
+    <db:mysql-config name="Training_MySQL_Configuration" host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" doc:name="MySQL Configuration"/>
     <jms:activemq-connector name="Active_MQ" specification="1.1" brokerURL="tcp://54.69.115.37:61616" validateConnections="true" doc:name="Active MQ"/>
-    <sfdc:config name="Salesforce__Basic_Authentication" username="manuelmachodelrio@gmail.com" password="xx" securityToken="" doc:name="Salesforce: Basic Authentication"/>
+    <sfdc:config name="Salesforce__Basic_Authentication" username="manuelmachodelrio@gmail.com" password="xx"  doc:name="Salesforce: Basic Authentication"/>
     <mulexml:jaxb-context name="JAXB_Context" packageNames="com.mulesoft.training" doc:name="JAXB Context"/>
     <data-mapper:config name="List_Map__To_Pojo" transformationGraphPath="list_map__to_pojo.grf" doc:name="List_Map__To_Pojo"/>
     <data-mapper:config name="String_To_Xml_findFlight_" transformationGraphPath="string_to_xml_findflight_.grf" doc:name="String_To_Xml_findFlight_"/>
@@ -26,6 +27,8 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
         <http:config useTransportForUris="false"/>
     </configuration>
     <data-mapper:config name="CSV_To_Map" transformationGraphPath="csv_to_map.grf" doc:name="CSV_To_Map"/>
+    <data-mapper:config name="List_Map__To_List_Account_" transformationGraphPath="list_map__to_list_account__1.grf" doc:name="List_Map__To_List_Account_"/>
+    <context:property-placeholder location="apstart-${env}.properties"/>
     <choice-exception-strategy name="globalChoice_Exception_Strategy">
         <catch-exception-strategy when="#[exception.causedBy(org.mule.api.expression.ExpressionRuntimeException)]" doc:name="Catch Expression Exception">
             <set-payload value="#['The application is currently unavailable']" doc:name="Set Payload"/>
@@ -36,5 +39,4 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
             <logger level="INFO" doc:name="Logger"/>
         </catch-exception-strategy>
     </choice-exception-strategy>
-    <data-mapper:config name="List_Map__To_List_Account_" transformationGraphPath="list_map__to_list_account__1.grf" doc:name="List_Map__To_List_Account_"/>
 </mule>
