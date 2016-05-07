@@ -68,7 +68,7 @@ WHERE postal = '39008' and accountID > #[flowVars.lastAccountID]]]></db:paramete
             <dw:transform-message metadata:id="8f720f20-8c28-4281-ad41-420bb59e438d" doc:name="Transform Message">
                 <dw:input-payload doc:sample="list_csv_1.csv"/>
                 <dw:set-payload><![CDATA[%dw 1.0
-%output application/csv
+%output application/java
 ---
 payload]]></dw:set-payload>
             </dw:transform-message>
