@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:json="http://www.mulesoft.org/schema/mule/json"
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:json="http://www.mulesoft.org/schema/mule/json"
 	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:file="http://www.mulesoft.org/schema/mule/file"
@@ -15,7 +15,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
     
     <flow name="getSFDCAccountsFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/sfdc" allowedMethods="GET" doc:name="HTTP"/>
@@ -61,10 +62,16 @@ WHERE postal = '39008' and accountID > #[flowVars.lastAccountID]]]></db:paramete
       
     <batch:job name="accountsCSVBatch">
         <batch:input>
-            <file:inbound-endpoint path="src/main/resources/input" moveToDirectory="src/main/resources/output" responseTimeout="10000" doc:name="File">
+            <file:inbound-endpoint path="src/main/resources/input" moveToDirectory="src/main/resources/output" responseTimeout="10000" metadata:id="d2f671b3-efe6-47ff-bb7e-97444af8159f" doc:name="File">
                 <file:filename-regex-filter pattern=".*csv" caseSensitive="true"/>
             </file:inbound-endpoint>
-            <data-mapper:transform config-ref="CSV_To_Map" doc:name="CSV To Map (Deprecated)"/>
+            <dw:transform-message metadata:id="8f720f20-8c28-4281-ad41-420bb59e438d" doc:name="Transform Message">
+                <dw:input-payload doc:sample="list_csv_1.csv"/>
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/csv
+---
+payload]]></dw:set-payload>
+            </dw:transform-message>
             <set-variable variableName="size" value="#[payload.size()]" doc:name="size"/>
         </batch:input>
         <batch:process-records>
